@@ -70,7 +70,7 @@ def show_menu():
 def show_product(product):
     """Print one product as an easy-to-read card."""
     rx = "Required" if product.requires_prescription else "Not required"
-    low = f"  {ui.YELLOW}(low stock){ui.RESET}" if product.stock < LOW_STOCK else ""
+    low = f"  (low stock)" if product.stock < LOW_STOCK else ""
     print(f"  Product ID   : {product.product_id}")
     print(f"  Name         : {product.name}")
     print(f"  Category     : {product.category}")
@@ -99,6 +99,9 @@ def insert_product(table, products):
         return
 
     name = input("  Name           : ").strip()
+    if not name:
+        ui.error("Name cannot be empty.")
+        return
     category = input("  Category       : ").strip()
     price = get_float("  Price (RM)     : ")
     stock = get_int("  Stock quantity : ")
@@ -177,7 +180,7 @@ def delete_product(table, products):
 
     print()
     show_product(product)
-    confirm = input(f"\n  Delete this product? (y/n): ").strip().lower()
+    confirm = input("\n  Delete this product? (y/n): ").strip().lower()
     if confirm != "y":
         ui.info("  Delete cancelled.")
         return
@@ -195,14 +198,14 @@ def view_all_products(table):
         return
     products.sort(key=lambda p: p.product_id)
 
-    print(ui.BOLD + f"  {'ID':<6}{'Name':<22}{'Category':<15}{'Price':>9}{'Stock':>7}  Rx" + ui.RESET)
+    print( f"  {'ID':<6}{'Name':<22}{'Category':<15}{'Price':>9}{'Stock':>7}  Rx" )
     ui.line()
     for p in products:
         price = f"RM{p.price:.2f}"
         rx = "Yes" if p.requires_prescription else "No"
         row = f"  {p.product_id:<6}{p.name[:21]:<22}{p.category[:14]:<15}{price:>9}{p.stock:>7}  {rx}"
         if p.stock < LOW_STOCK:
-            row = ui.YELLOW + row + "  (low stock)" + ui.RESET
+            row =  row + "  (low stock)"
         print(row)
     ui.line()
     print(f"  {len(products)} product(s) | Low stock = below {LOW_STOCK} units")
@@ -210,18 +213,18 @@ def view_all_products(table):
 
 def view_hash_table(table):
     ui.section("HASH TABLE VIEW")
-    print(ui.BOLD + f"  {'Slot':>4} | {'Status':<8} | {'Home':>4} | Product" + ui.RESET)
+    print( f"  {'Slot':>4} | {'Status':<8} | {'Home':>4} | Product" )
     ui.line()
     for index, status, key, product in table.slots():
         if status == "EMPTY":
             continue
         if status == "DELETED":
-            print(ui.DIM + f"  {index:>4} | {'DELETED':<8} | {'-':>4} | (tombstone)" + ui.RESET)
+            print( f"  {index:>4} | {'DELETED':<8} | {'-':>4} | (tombstone)" )
             continue
         home = table.home_slot(key)
         row = f"  {index:>4} | {status:<8} | {home:>4} | {product.product_id} {product.name}"
         if home != index:
-            row += ui.YELLOW + "  <- collision, probed" + ui.RESET
+            row +=  "  <- collision, probed"
         print(row)
     ui.line()
     print(f"  Stored: {len(table)} | Capacity: {table.capacity} | "
