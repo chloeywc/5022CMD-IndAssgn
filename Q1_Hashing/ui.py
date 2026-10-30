@@ -15,7 +15,7 @@ def banner(title, subtitle=""):
 
 def section(title):
     """Heading line that starts each screen, e.g. ── SEARCH PRODUCT ──────."""
-    print()
+    print("\n")
     print(f"── {title} " + "─" * (WIDTH - len(title) - 4))
 
 
@@ -37,8 +37,3 @@ def warning(message):
 
 def info(message):
     print(message)
-
-
-def pause():
-    """Wait so the user can read the result before the menu appears again."""
-    input("\nPress Enter to return to the menu...")

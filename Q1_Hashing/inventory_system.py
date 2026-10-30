@@ -198,17 +198,16 @@ def view_all_products(table):
         return
     products.sort(key=lambda p: p.product_id)
 
-    print( f"  {'ID':<6}{'Name':<22}{'Category':<15}{'Price':>9}{'Stock':>7}  Rx" )
+    print(f"  {'ID':<6}{'Name':<20}{'Category':<14}{'Price':>9}{'Stock':>7}  {'Rx':<4}Status")
     ui.line()
     for p in products:
         price = f"RM{p.price:.2f}"
         rx = "Yes" if p.requires_prescription else "No"
-        row = f"  {p.product_id:<6}{p.name[:21]:<22}{p.category[:14]:<15}{price:>9}{p.stock:>7}  {rx}"
-        if p.stock < LOW_STOCK:
-            row =  row + "  (low stock)"
-        print(row)
+        stock_status = "LOW" if p.stock < LOW_STOCK else "OK"
+        print(f"  {p.product_id:<6}{p.name[:19]:<20}{p.category[:13]:<14}"
+              f"{price:>9}{p.stock:>7}  {rx:<4}{stock_status}")
     ui.line()
-    print(f"  {len(products)} product(s) | Low stock = below {LOW_STOCK} units")
+    print(f"  {len(products)} product(s) | LOW = below {LOW_STOCK} units")
 
 
 def view_hash_table(table):
@@ -264,7 +263,6 @@ def main():
             break
         if choice in actions:
             actions[choice]()
-            ui.pause()
         else:
             ui.error("Invalid choice, please enter 1-7.")
 
