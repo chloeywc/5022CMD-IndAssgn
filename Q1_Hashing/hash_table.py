@@ -22,47 +22,85 @@ class HashTable:
         self._slots = [None] * capacity  # every slot starts empty
         self._size = 0                   # number of entries stored
 
+    # ---------- internal helpers ----------
+
     def _hash(self, key):
         """Map a key to its home slot index."""
         return hash(key) % self._capacity
 
-    def insert(self, key, value):
-        """Insert or update a key. Returns the slot index used."""
+    def _find_index(self, key):
+        """Return the slot index holding key, or None if key is not stored."""
         start = self._hash(key)
-
         for i in range(self._capacity):
             index = (start + i) % self._capacity  # linear probing
             slot = self._slots[index]
+            if slot is None:                      # empty slot: key cannot be further on
+                return None
+            if slot is not self._DELETED and slot.key == key:
+                return index
+        return None
 
-            if slot is None or slot is self._DELETED:
+    # ---------- public operations ----------
+
+    def insert(self, key, value):
+        """Insert a new key, or update it if it already exists. Returns the slot index."""
+        existing = self._find_index(key)
+        if existing is not None:              # key already stored: update, don't duplicate
+            self._slots[existing].value = value
+            return existing
+
+        start = self._hash(key)
+        for i in range(self._capacity):
+            index = (start + i) % self._capacity
+            slot = self._slots[index]
+            if slot is None or slot is self._DELETED:  # reuse empty or deleted slots
                 self._slots[index] = _Entry(key, value)
                 self._size += 1
-                return index
-
-            if slot.key == key:  # same key: update instead of duplicating
-                slot.value = value
                 return index
 
         raise OverflowError("Hash table is full")
 
     def search(self, key):
         """Return the value for key, or None if not found."""
-        start = self._hash(key)
+        index = self._find_index(key)
+        return None if index is None else self._slots[index].value
 
-        for i in range(self._capacity):
-            index = (start + i) % self._capacity
-            slot = self._slots[index]
+    def delete(self, key):
+        """Remove key and return the slot index it was in, or None if not found."""
+        index = self._find_index(key)
+        if index is None:
+            return None
+        self._slots[index] = self._DELETED    # tombstone keeps probe chains intact
+        self._size -= 1
+        return index
 
-            if slot is None:           # empty slot: key cannot be further on
-                return None
+    # ---------- information for display / analysis ----------
 
-            if slot is self._DELETED:  # tombstone: keep probing
-                continue
+    def home_slot(self, key):
+        """Return the slot a key would ideally go to (before any probing)."""
+        return self._hash(key)
 
-            if slot.key == key:
-                return slot.value
+    def find_slot(self, key):
+        """Return the slot index where key is stored, or None if not found."""
+        return self._find_index(key)
 
-        return None
+    def slots(self):
+        """Yield (index, status, key, value) for every slot in the table."""
+        for index, slot in enumerate(self._slots):
+            if slot is None:
+                yield index, "EMPTY", None, None
+            elif slot is self._DELETED:
+                yield index, "DELETED", None, None
+            else:
+                yield index, "OCCUPIED", slot.key, slot.value
+
+    def load_factor(self):
+        """Fraction of slots currently in use (0.0 to 1.0)."""
+        return self._size / self._capacity
+
+    @property
+    def capacity(self):
+        return self._capacity
 
     def __len__(self):
         return self._size
@@ -70,8 +108,10 @@ class HashTable:
 
 if __name__ == "__main__":
     table = HashTable(capacity=10)
-    print(table.insert(3, "A"))    # expect slot 3
-    print(table.insert(13, "B"))   # collision! expect slot 4
-    print(table.insert(23, "C"))   # collision! expect slot 5
-    print(table.search(13))        # expect B
-    print(table.search(99))        # expect None
+    print(table.insert(3, "A"))    # expect 3
+    print(table.insert(13, "B"))   # collision -> expect 4
+    print(table.insert(23, "C"))   # collision -> expect 5
+    print(table.delete(13))        # expect 4 (slot 4 becomes a tombstone)
+    print(table.search(23))        # expect C: tombstone lets the search continue
+    print(table.insert(23, "C2"))  # expect 5: updates, does NOT duplicate into slot 4
+    print(len(table))              # expect 2
