@@ -37,3 +37,51 @@ Average T: 13,190,488,334 ns  (13.19 seconds)
 Average with multithreading    : 13,165,361,621 ns
 Average without multithreading : 13,190,488,334 ns
 Observation: difference of 0.2% is within measurement noise - multithreading gave no real speed-up.
+
+=================================================================
+PRELIMINARY RUN A - 2 rounds (quick test, before the final run)
+=================================================================
+Python 3.12.10 | GIL enabled: True | Rounds: 2 | Numbers: [35, 38, 40]
+
+WITH MULTITHREADING
+Round  1: Fib(35)=9227465, Fib(38)=39088169, Fib(40)=102334155 | T = 14,390,469,042 ns
+Round  2: Fib(35)=9227465, Fib(38)=39088169, Fib(40)=102334155 | T = 13,247,125,208 ns
+Average T: 13,818,797,125 ns  (13.82 seconds)
+
+WITHOUT MULTITHREADING
+Round  1: Fib(35)=9227465, Fib(38)=39088169, Fib(40)=102334155 | T = 13,226,961,375 ns
+Round  2: Fib(35)=9227465, Fib(38)=39088169, Fib(40)=102334155 | T = 13,239,226,583 ns
+Average T: 13,233,093,979 ns  (13.23 seconds)
+
+Observation: multithreading was 4.4% SLOWER on average.
+
+=================================================================
+PRELIMINARY RUN B - 10 rounds (before the final run)
+=================================================================
+WITH MULTITHREADING
+Round  1: T = 13,242,409,166 ns
+Round  2: T = 13,199,212,917 ns
+Round  3: T = 13,211,169,667 ns
+Round  4: T = 13,208,307,583 ns
+Round  5: T = 13,197,199,042 ns
+Round  6: T = 13,210,992,167 ns
+Round  7: T = 13,203,284,875 ns
+Round  8: T = 13,226,642,916 ns
+Round  9: T = 13,212,003,583 ns
+Round 10: T = 13,240,062,917 ns
+Average T: 13,215,128,483 ns  (13.22 seconds)
+
+WITHOUT MULTITHREADING
+Round  1: T = 13,297,853,125 ns
+Round  2: T = 13,291,178,917 ns
+Round  3: T = 13,291,432,333 ns
+Round  4: T = 13,358,456,125 ns
+Round  5: T = 13,301,565,125 ns
+Round  6: T = 13,312,365,875 ns
+Round  7: T = 13,294,734,334 ns
+Round  8: T = 13,295,065,167 ns
+Round  9: T = 13,297,906,333 ns
+Round 10: T = 13,294,195,708 ns
+Average T: 13,303,475,304 ns  (13.30 seconds)
+
+Observation: multithreading was 0.7% FASTER on average.
