@@ -34,6 +34,3 @@ python3 threading_experiment.py   # with vs without multithreading
 > Note: the full experiment takes about 5 minutes.
 
 Experiment results: `Q3_results.txt`
-
-## AI Tool Acknowledgement
-**Claude** was used throughout this assignment to explain concepts, suggest the project structure and review code, and help design the command-line output. I tested every feature, correct the code, requested and made changes (for example adding spacing, and fixing table alignment), ran all experiments, and analysed the results myself.
